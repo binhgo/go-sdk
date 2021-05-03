@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"gitlab.ghn.vn/common-projects/go-sdk/sdk/websocket"
 	"strconv"
 	"time"
+
+	"github.com/binhgo/go-sdk/sdk/websocket"
 )
 
 func main4() {

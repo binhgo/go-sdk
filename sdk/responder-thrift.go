@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"time"
 
-	"gitlab.ghn.vn/common-projects/go-sdk/sdk/thriftapi"
+	"github.com/binhgo/go-sdk/sdk/thriftapi"
 )
 
 // ThriftAPIResponder This is response object with JSON format

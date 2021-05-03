@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"gitlab.ghn.vn/common-projects/go-sdk/sdk"
+	"github.com/binhgo/go-sdk/sdk"
 )
 
 // APIInfo ...
@@ -21,7 +21,7 @@ type APIInfo struct {
 var gateway *sdk.APIGateway
 var env string
 
-//var configMap map[string]string
+// var configMap map[string]string
 var apiInfo APIInfo
 var dbName string
 
@@ -41,19 +41,19 @@ func main2132() {
 
 	// get config & env
 	env = os.Getenv("env")
-	//configStr := os.Getenv("config")
-	//decoded, err := base64.URLEncoding.DecodeString(configStr)
-	//if err != nil {
+	// configStr := os.Getenv("config")
+	// decoded, err := base64.URLEncoding.DecodeString(configStr)
+	// if err != nil {
 	//	fmt.Println("[Gateway] Convert B64 config string error: " + err.Error())
 	//	return
-	//}
-	//err = json.Unmarshal(decoded, &configMap)
-	//if err != nil {
+	// }
+	// err = json.Unmarshal(decoded, &configMap)
+	// if err != nil {
 	//	fmt.Println("[Gateway] Parse JSON with config string error: " + err.Error())
 	//	return
-	//}
+	// }
 	//
-	//fmt.Println("[Gateway] Get config completed.")
+	// fmt.Println("[Gateway] Get config completed.")
 
 	apiInfo = APIInfo{
 		Version:   os.Getenv("version"),

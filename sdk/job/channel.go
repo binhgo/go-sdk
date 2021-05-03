@@ -1,9 +1,10 @@
 package job
 
 import (
-	"gitlab.ghn.vn/common-projects/go-sdk/sdk"
 	"sync"
 	"time"
+
+	"github.com/binhgo/go-sdk/sdk"
 )
 
 // ExecutionChannel ...

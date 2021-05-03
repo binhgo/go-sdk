@@ -119,7 +119,7 @@ func (q *DBQueue) SetConsumer(consumer ConsumeFn) {
 
 // Push put new item into queue
 func (q *DBQueue) Push(data interface{}) error {
-	//start := time.Now()
+	// start := time.Now()
 	if q.collection == nil {
 		q.collection = q.db.C(q.ColName)
 	}
@@ -134,8 +134,8 @@ func (q *DBQueue) Push(data interface{}) error {
 	col := q.collection.With(s.GetMGOSession())
 
 	col.Insert(item)
-	//elapsed := time.Since(start)
-	//log.Printf("Run time %s", elapsed/time.Millisecond)
+	// elapsed := time.Since(start)
+	// log.Printf("Run time %s", elapsed/time.Millisecond)
 	return nil
 }
 

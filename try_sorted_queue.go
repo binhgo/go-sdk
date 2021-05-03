@@ -3,10 +3,12 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/globalsign/mgo/bson"
-	"gitlab.ghn.vn/common-projects/go-sdk/sdk"
-	"gitlab.ghn.vn/common-projects/go-sdk/sdk/job"
 	"time"
+
+	"github.com/globalsign/mgo/bson"
+
+	"github.com/binhgo/go-sdk/sdk"
+	"github.com/binhgo/go-sdk/sdk/job"
 )
 
 type TestObj struct {
@@ -29,11 +31,11 @@ func main() {
 		ColName: "announcement_job",
 	}
 
-	//var fixDB = sdk.DBModel2{
+	// var fixDB = sdk.DBModel2{
 	//	ColName:        "announcement_job",
 	//	DBName:         "internal-tools_stg_css_queue",
 	//	TemplateObject: &TestObj{},
-	//}
+	// }
 
 	var app = sdk.NewApp("Test App")
 
@@ -60,7 +62,7 @@ func main() {
 			OldVersionTimeoutS:      30,
 			MaximumWaitToRetryS:     15,
 		})
-		//fixDB.Init(session)
+		// fixDB.Init(session)
 		return nil
 	})
 
@@ -74,19 +76,19 @@ func main() {
 			fmt.Println(string(str))
 			return nil
 		})
-		//for i := 0; i < 30; i++ {
+		// for i := 0; i < 30; i++ {
 		//	executor.Push("data "+strconv.Itoa(i), &job.JobItemMetadata{
 		//		Topic:     "AAA",
 		//		SortedKey: strconv.Itoa(i % 2),
 		//	})
-		//}
+		// }
 		//
-		//for i := 0; i < 30; i++ {
+		// for i := 0; i < 30; i++ {
 		//	executor.Push("data "+strconv.Itoa(i), &job.JobItemMetadata{
 		//		Topic:     "BBB",
 		//		SortedKey: strconv.Itoa(10 + i%2),
 		//	})
-		//}
+		// }
 		//
 		executor.StartConsume()
 

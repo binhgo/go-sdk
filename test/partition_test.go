@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"gitlab.ghn.vn/common-projects/go-sdk/sdk"
+	"github.com/binhgo/go-sdk/sdk"
 )
 
 func TestGetPartitionNameDay(t *testing.T) {

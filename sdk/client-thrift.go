@@ -11,7 +11,8 @@ import (
 	"time"
 
 	"github.com/apache/thrift/lib/go/thrift"
-	"gitlab.ghn.vn/common-projects/go-sdk/sdk/thriftapi"
+
+	"github.com/binhgo/go-sdk/sdk/thriftapi"
 )
 
 // ThriftClient Client for call Thrift service

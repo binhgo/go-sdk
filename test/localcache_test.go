@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"gitlab.ghn.vn/common-projects/go-sdk/sdk"
+	"github.com/binhgo/go-sdk/sdk"
 )
 
 func TestPutLocalCache(t *testing.T) {

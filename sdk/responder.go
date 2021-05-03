@@ -8,7 +8,8 @@ import (
 	"time"
 
 	"github.com/labstack/echo"
-	"gitlab.ghn.vn/common-projects/go-sdk/sdk/thriftapi"
+
+	"github.com/binhgo/go-sdk/sdk/thriftapi"
 )
 
 // APIResponder ...

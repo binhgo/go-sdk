@@ -1,13 +1,15 @@
 package job
 
 import (
-	"github.com/globalsign/mgo"
-	"gitlab.ghn.vn/common-projects/go-sdk/sdk"
 	"math/rand"
 	"os"
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/globalsign/mgo"
+
+	"github.com/binhgo/go-sdk/sdk"
 )
 
 // ExecutionFn ...

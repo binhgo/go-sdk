@@ -344,7 +344,7 @@ func (m *DBModel) G(id string, result interface{}) *APIResponse {
 		}
 	}
 
-	//col, err := m.GetCollection()
+	// col, err := m.GetCollection()
 	s := m.GetFreshSession()
 	defer s.Close()
 	col, err := m.GetColWith(s)
@@ -372,7 +372,7 @@ func (m *DBModel) G(id string, result interface{}) *APIResponse {
 
 // Query Get all object in DB
 func (m *DBModel) Query(query bson.M, offset int, limit int, reverse bool, result interface{}) error {
-	//col, err := m.GetCollection()
+	// col, err := m.GetCollection()
 
 	s := m.GetFreshSession()
 	defer s.Close()
@@ -398,7 +398,7 @@ func (m *DBModel) Query(query bson.M, offset int, limit int, reverse bool, resul
 
 // QueryOne Get all object in DB
 func (m *DBModel) QueryOne(query bson.M, result interface{}) (interface{}, error) {
-	//col, err := m.GetCollection()
+	// col, err := m.GetCollection()
 	s := m.GetFreshSession()
 	defer s.Close()
 	col, err := m.GetColWith(s)
@@ -412,7 +412,7 @@ func (m *DBModel) QueryOne(query bson.M, result interface{}) (interface{}, error
 
 // Create Insert new entity
 func (m *DBModel) Create(ent interface{}) error {
-	//col, err := m.GetCollection()
+	// col, err := m.GetCollection()
 	s := m.GetFreshSession()
 	defer s.Close()
 	col, err := m.GetColWith(s)
@@ -432,7 +432,7 @@ func (m *DBModel) Create(ent interface{}) error {
 
 // I Insert new entity
 func (m *DBModel) I(ent interface{}) *APIResponse {
-	//col, err := m.GetCollection()
+	// col, err := m.GetCollection()
 	s := m.GetFreshSession()
 	defer s.Close()
 	col, err := m.GetColWith(s)
@@ -469,7 +469,7 @@ func (m *DBModel) I(ent interface{}) *APIResponse {
 
 // Update Update exist entity
 func (m *DBModel) Update(id string, updater interface{}) error {
-	//col, err := m.GetCollection()
+	// col, err := m.GetCollection()
 
 	s := m.GetFreshSession()
 	defer s.Close()
@@ -494,7 +494,7 @@ func (m *DBModel) U(id string, updater interface{}) *APIResponse {
 	defer s.Close()
 	col, err := m.GetColWith(s)
 
-	//col, err := m.GetCollection()
+	// col, err := m.GetCollection()
 	if err != nil {
 		return &APIResponse{
 			Status:  APIStatus.Error,
@@ -527,7 +527,7 @@ func (m *DBModel) U(id string, updater interface{}) *APIResponse {
 
 // Delete Delete exist entity
 func (m *DBModel) Delete(id string) error {
-	//col, err := m.GetCollection()
+	// col, err := m.GetCollection()
 	s := m.GetFreshSession()
 	defer s.Close()
 	col, err := m.GetColWith(s)
@@ -539,7 +539,7 @@ func (m *DBModel) Delete(id string) error {
 
 // D Delete exist entity
 func (m *DBModel) D(id string) *APIResponse {
-	//col, err := m.GetCollection()
+	// col, err := m.GetCollection()
 	s := m.GetFreshSession()
 	defer s.Close()
 	col, err := m.GetColWith(s)
@@ -564,7 +564,7 @@ func (m *DBModel) D(id string) *APIResponse {
 
 // Incre Delete exist entity
 func (m *DBModel) IncreOne(query interface{}, fieldName string, value int, result interface{}) *APIResponse {
-	//col, err := m.GetCollection()
+	// col, err := m.GetCollection()
 	s := m.GetFreshSession()
 	defer s.Close()
 	col, err := m.GetColWith(s)
@@ -597,7 +597,7 @@ func (m *DBModel) IncreOne(query interface{}, fieldName string, value int, resul
 
 // FindAndUpdate Delete exist entity
 func (m *DBModel) FindAndUpdate(query interface{}, updater interface{}, limit int, result interface{}) *APIResponse {
-	//col, err := m.GetCollection()
+	// col, err := m.GetCollection()
 	s := m.GetFreshSession()
 	defer s.Close()
 	col, err := m.GetColWith(s)

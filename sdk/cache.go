@@ -10,7 +10,7 @@ type cacheItem struct {
 	lastAccessed int64
 }
 
-//LCache ...
+// LCache ...
 type LCache struct {
 	m          map[string]*cacheItem
 	l          sync.Mutex

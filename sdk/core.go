@@ -5,11 +5,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"gitlab.ghn.vn/common-projects/go-sdk/sdk/websocket"
 	"os"
 	"runtime"
 	"sync"
 	"time"
+
+	"github.com/binhgo/go-sdk/sdk/websocket"
 
 	"github.com/globalsign/mgo/bson"
 )
@@ -87,7 +88,7 @@ type BasicInfo struct {
 	LastUpdatedTime time.Time     `json:"lastUpdatedTime,omitempty"`
 }
 
-//App ..
+// App ..
 type App struct {
 	Name             string
 	ServerList       []APIServer

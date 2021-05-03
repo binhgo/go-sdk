@@ -1,8 +1,9 @@
 package job
 
 import (
-	"github.com/globalsign/mgo/bson"
 	"time"
+
+	"github.com/globalsign/mgo/bson"
 )
 
 // JobItem ...

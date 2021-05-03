@@ -95,7 +95,7 @@ func (p *DBPartitionedModel) GetNameFromValue(time time.Time) string {
 	return p.ColName
 }
 
-//==============================CURD=======================================//
+// ==============================CURD=======================================//
 
 // Create : create document partition by date
 func (p *DBPartitionedModel) Create(ent interface{}) error {
@@ -116,7 +116,7 @@ func (p *DBPartitionedModel) Create(ent interface{}) error {
 
 	// get model from date
 	dbModel := p.GetModel(date)
-	//col, err := m.GetCollection()
+	// col, err := m.GetCollection()
 	s := dbModel.GetFreshSession()
 	defer s.Close()
 	col, err := dbModel.GetColWith(s)
@@ -130,7 +130,7 @@ func (p *DBPartitionedModel) Create(ent interface{}) error {
 // Query ...
 func (p *DBPartitionedModel) Query(query bson.M, date time.Time, maxSpanCount int, offset int, limit int, reverse bool, result interface{}) (int, error) {
 
-	//Init Slice with input Type
+	// Init Slice with input Type
 	object := reflect.Indirect(reflect.ValueOf(result))
 	listType := object.Type()
 	fRs := reflect.MakeSlice(listType, 0, 0)
@@ -210,7 +210,7 @@ func (p *DBPartitionedModel) Query(query bson.M, date time.Time, maxSpanCount in
 // Q ...
 func (p *DBPartitionedModel) Q(query interface{}, date time.Time, maxSpanCount int, offset int, limit int, reverse bool, result interface{}) (int, error) {
 
-	//Init Slice with input Type
+	// Init Slice with input Type
 	object := reflect.Indirect(reflect.ValueOf(result))
 	listType := object.Type()
 	fRs := reflect.MakeSlice(listType, 0, 0)

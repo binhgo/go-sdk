@@ -63,7 +63,7 @@ type CallResult struct {
 	ErrorLog     *string             `json:"errorLog,omitempty" bson:"error_log,omitempty"`
 }
 
-//RestResult :
+// RestResult :
 type RestResult struct {
 	Body    string `json:"body,omitempty" bson:"body,omitempty"`
 	Content []byte `json:"content,omitempty" bson:"content,omitempty"`
@@ -185,7 +185,7 @@ func (c *RestClient) SetDBLog(dbName string, session *DBSession) {
 			Key:         []string{"created_time"},
 			Background:  true,
 			Sparse:      true,
-			ExpireAfter: time.Duration(1814400) * time.Second, //21 day
+			ExpireAfter: time.Duration(1814400) * time.Second, // 21 day
 		}
 		model.CreateIndex(index)
 
@@ -476,9 +476,9 @@ func (c *RestClient) readBody(resp *http.Response, callRs *CallResult, logEntry 
 		if canRetryCount >= 0 {
 			logEntry.RetryCount = c.maxRetryTime - canRetryCount
 		}
-		//sample
+		// sample
 		logEntry.addResult(callRs)
-		//return
+		// return
 		return &restResult, err
 	}
 	return nil, nil

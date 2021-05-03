@@ -1,9 +1,11 @@
 package job
 
 import (
-	"github.com/globalsign/mgo/bson"
-	"gitlab.ghn.vn/common-projects/go-sdk/sdk"
 	"time"
+
+	"github.com/globalsign/mgo/bson"
+
+	"github.com/binhgo/go-sdk/sdk"
 )
 
 // ExecutionSelector ...

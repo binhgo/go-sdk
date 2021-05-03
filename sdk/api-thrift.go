@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"sync"
 
-	"gitlab.ghn.vn/common-projects/go-sdk/sdk/thriftapi"
+	"github.com/binhgo/go-sdk/sdk/thriftapi"
 
 	"github.com/apache/thrift/lib/go/thrift"
 )
@@ -40,18 +40,18 @@ func (server *ThriftServer) SetHandler(method *MethodValue, path string, fn Hand
 	return nil
 }
 
-//PreRequest ...
+// PreRequest ...
 func (server *ThriftServer) PreRequest(fn PreHandler) error {
 	server.thriftHandler.preHandler = fn
 	return nil
 }
 
-//Expose Add api handler
+// Expose Add api handler
 func (server *ThriftServer) Expose(port int) {
 	server.port = port
 }
 
-//Start Start API server
+// Start Start API server
 func (server *ThriftServer) Start(wg *sync.WaitGroup) {
 	var ps = strconv.Itoa(server.port)
 	fmt.Println("  [ Thrift API Server " + strconv.Itoa(server.ID) + " ] Try to listen at " + ps)
