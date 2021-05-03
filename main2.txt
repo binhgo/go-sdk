@@ -1,0 +1,329 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"math"
+	"math/rand"
+	"strconv"
+	"time"
+
+	"github.com/globalsign/mgo"
+	"github.com/globalsign/mgo/bson"
+	"gitlab.ghn.vn/common-projects/go-sdk/sdk"
+)
+
+var orderDB = &sdk.DBModel{
+	DBName:  "station_order_test",
+	ColName: "order",
+}
+
+var increTestDB = &sdk.DBModel{
+	DBName:  "station_order_test",
+	ColName: "master",
+}
+
+var GroupRouteDB = &sdk.DBModel2{
+	DBName:         "test_sdk",
+	ColName:        "group_route",
+	TemplateObject: &GroupRoute{},
+}
+
+type Marshaler interface {
+	MarshalJSON() ([]byte, error)
+}
+
+// ISOTime ...
+type ISOTime struct {
+	time.Time
+}
+
+// MarshalJSON ...
+func (t ISOTime) MarshalJSON() ([]byte, error) {
+	stamp := fmt.Sprintf("\"%s\"", t.Format(time.ANSIC))
+	return []byte(stamp), nil
+}
+
+// GroupRoute ..
+type GroupRoute struct {
+	// source hub
+	SrcHub string `bson:"src_hub,omitempty" json:"srcHub,omitempty"`
+	// destination hub
+	DstHub string `bson:"dst_hub,omitempty" json:"dstHub,omitempty"`
+	// basic info
+	ID              bson.ObjectId `bson:"_id,omitempty" json:"id,omitempty"`
+	CreatedTime     *time.Time    `bson:"created_time,omitempty" json:"createdTime,omitempty"`
+	LastUpdatedTime *time.Time    `bson:"last_updated_time,omitempty" json:"lastUpdatedTime,omitempty"`
+}
+
+func getHeader() map[string]string {
+	header := make(map[string]string)
+	header["X-ApiKey"] = "00100"
+	header["X-ApiSecret"] = "UngEy7kLlTVgdaxVTOMLaJhQF45H6nEBJVoBgyQ0xUzpkqn5q7z"
+	return header
+}
+
+func sample(req sdk.APIRequest, res sdk.APIResponder) error {
+	params := make(map[string]string)
+	params["packageCode"] = "4EQX1X69"
+	client.MakeHTTPRequest(sdk.HTTPMethods.Get, getHeader(), params, nil, "")
+
+	return res.Respond(&sdk.APIResponse{Status: sdk.APIStatus.Ok, Message: "Everything is ok."})
+}
+
+func sample2(req sdk.APIRequest, res sdk.APIResponder) error {
+
+	route1 := GroupRoute{
+		SrcHub: "100",
+		DstHub: "200",
+	}
+	return res.Respond(GroupRouteDB.Create(route1))
+}
+
+func sample3(req sdk.APIRequest, res sdk.APIResponder) error {
+
+	route1 := GroupRoute{
+		SrcHub: "100",
+		DstHub: "200",
+	}
+
+	route2 := GroupRoute{
+		SrcHub: "100",
+		DstHub: "500",
+	}
+	return res.Respond(GroupRouteDB.UpsertOne(route1, route2))
+}
+
+type Value struct {
+	ID    string `json:"id,omitempty" bson:"_id,omitempty"`
+	Value int    `json:"value,omitempty" bson:"value,omitempty"`
+}
+
+func convertToCode(number int, length int, template string) string {
+	var result = ""
+	var i = 0
+	var ln = len(template)
+	var capacity = int(math.Pow(float64(ln), float64(length)))
+	fmt.Println("Capacity = " + strconv.Itoa(capacity))
+	number = number % capacity
+	for i < length {
+		var cur = number % ln
+		if i > 0 {
+			cur = (cur + int(result[i-1])) % ln
+		}
+		result = result + string(template[cur])
+		number = number / ln
+		i++
+	}
+	return result
+}
+
+func incre() {
+	var val Value
+	increTestDB.IncreOne(bson.M{"_id": "order-id"}, "value", 3, &val)
+	fmt.Println(strconv.Itoa(val.Value) + " => " + convertToCode(val.Value, 7, "346789QWERTYUPADFGHJKLXCVBNM"))
+}
+
+func onConnected(session *sdk.DBSession) error {
+	orderDB.Init(session)
+	increTestDB.Init(session)
+	client.SetDBLog("test_rest", session)
+
+	GroupRouteDB.Init(session)
+
+	var i = 0
+	for i < 5 {
+		go incre()
+		i++
+	}
+	return nil
+}
+
+func backgroundTask() {
+	fmt.Println(time.Now())
+}
+
+type OrderSorting struct {
+	OrderCode string `json:"orderCode"`
+	Label     string `json:"label"`
+}
+
+var onInitCollection = func(session *sdk.DBSession, colName string, dbName string) (sdk.DBModel, error) {
+	model := sdk.DBModel{
+		ColName: colName,
+		DBName:  dbName,
+	}
+	err := model.Init(session)
+	if err == nil {
+		index := mgo.Index{
+			Key:        []string{"src_hub", "dst_hub"},
+			Unique:     true,
+			DropDups:   true,
+			Background: true,
+			Sparse:     true,
+		}
+
+		model.CreateIndex(index)
+
+		// col, _ := model.GetCollection()
+
+		// col.EnsureIndex(index)
+	}
+	return model, err
+}
+var client = sdk.NewRESTClient("http://35.198.204.90/tms/v1/transportation", "call_inside", 4*time.Second, 2, 1*time.Second)
+
+var queueModel = sdk.DBQueue{
+	ColName: "test_queue",
+	DBName:  "test",
+}
+
+type TestStruct struct {
+	ID          *bson.ObjectId `json:"id,omitempty" bson:"_id,omitempty"`
+	Value       int            `json:"value,omitempty" bson:"value,omitempty"`
+	Name        string         `json:"name,omitempty" bson:"name,omitempty"`
+	PhoneNumber string         `json:"phoneNumber,omitempty" bson:"phone_number,omitempty"`
+}
+
+var testNewDB = sdk.DBModel2{
+	ColName:        "test_db_v2",
+	DBName:         "test",
+	TemplateObject: &TestStruct{},
+}
+
+func toJSON(obj interface{}) string {
+	bytes, _ := json.Marshal(obj)
+	return string(bytes)
+}
+
+func makeRequest() {
+	headers := map[string]string{
+		"Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBDb2RlIjoiaW5zaWRlIiwiY3JlYXRlZFRpbWUiOiIyMDE5LTA3LTAyVDA5OjMyOjQ2LjQ4ODcyMzQ0MloiLCJleHBpcmVkIjoiMjAxOS0wNy0wOVQwOTozMjo0Ni40ODg3MjIxODNaIiwib3JnQ29kZSI6ImdobmV4cHJlc3MiLCJwYXJ0bmVyQ29kZSI6ImdobmxvZ2lzdGljIiwic2VlZCI6NTQ2NzcyNjkyMDQzMDI3ODIyM30.oxehotHuhKhdh41IXLYDD12cov7oKzgfiYaS5-NDge0",
+	}
+	params := map[string]string{
+		"Code": "T17W7MLKJH",
+	}
+	n := 100
+	fmt.Println("Start " + time.Now().String())
+	for n > 0 {
+		client.MakeHTTPRequest(sdk.HTTPMethods.Get, headers, params, nil, "")
+		n--
+	}
+	fmt.Println("End " + time.Now().String())
+}
+
+func onConnectedNewDB(session *sdk.DBSession) error {
+
+	testNewDB.Init(session)
+
+	// client.SetDBLog("test_db_v2", session)
+
+	// g := 100
+	// for g > 0 {
+	// 	go makeRequest()
+	// 	g--
+	// }
+	// fmt.Println(reflect.TypeOf(result.Data.([]interface{})[0]))
+
+	// result := testNewDB.Update(&TestStruct{
+	// 	Name: "ABCD",
+	// }, &TestStruct{
+	// 	Name: "QWERTY",
+	// })
+
+	// result := testNewDB.Create(
+	// 	&TestStruct{
+	// 		Value:       123,
+	// 		Name:        "ABCD",
+	// 		PhoneNumber: "0123456789",
+	// 	})
+
+	// result := testNewDB.CreateMany([]interface{}{
+	// 	&TestStruct{
+	// 		Value:       123,
+	// 		Name:        "ABCD",
+	// 		PhoneNumber: "0123456789",
+	// 	},
+	// 	&TestStruct{
+	// 		Value:       321,
+	// 		Name:        "ABCD",
+	// 		PhoneNumber: "0123456789",
+	// 	},
+	// 	&TestStruct{
+	// 		Value:       99,
+	// 		Name:        "ABCD",
+	// 		PhoneNumber: "0123456789",
+	// 	},
+	// })
+
+	result := testNewDB.Query(nil, 0, 0, false)
+
+	// result := testNewDB.IncreOne(&TestStruct{
+	// 	ID: bson.ObjectIdHex("5d1dbb5d8a6fce256f83a3ee"),
+	// }, "value", 4)
+
+	fmt.Println(toJSON(result))
+	// fmt.Println(reflect.TypeOf(result.Data))
+	// fmt.Println(toJSON())
+	// fmt.Println(toJSON(testNewDB.Count(&TestStruct{
+	// 	Name: "QWERTY",
+	// })))
+
+	return nil
+}
+
+var queue = &sdk.DBQueue2{
+	ColName: "queue_v2",
+}
+
+func consume(item *sdk.QueueItem) error {
+
+	// t := ((rand.Int() % 3000) + 5)
+	// time.Sleep(time.Duration(t) * time.Millisecond)
+	fmt.Println(item.Data.(string))
+	// if t%10 < 8 {
+	// 	return &sdk.Error{Type: "SOMETHING", Message: "Hello world!"}
+	// }
+	// fmt.Println(item.Data.(string) + " end")
+	return nil
+}
+
+func testPush() {
+	// for i := 0; i < 100; i++ {
+	// 	queue.Push("Item " + strconv.Itoa(i))
+	// }
+}
+
+func onConnectedForQueueTest(session *sdk.DBSession) error {
+	GroupRouteDB.Init(session)
+	return nil
+}
+
+func main() {
+	// fmt.Println(int(time.Now().Month()))
+	var app = sdk.NewApp("MyApp")
+
+	// setup database client
+	var db = app.SetupDBClient(sdk.DBConfiguration{
+		// Address:  []string{"clustertraining-shard-00-00-2f1oc.gcp.mongodb.net:27017", "clustertraining-shard-00-01-2f1oc.gcp.mongodb.net:27017", "clustertraining-shard-00-02-2f1oc.gcp.mongodb.net:27017"},
+		Address:  []string{"35.247.133.237:27017"},
+		Username: "admin",
+		Password: "9aWuXyqKfnMvXc8rT27ZLRwww12345678", // "0123456789",
+		Ssl:      false,
+	})
+	db.OnConnected(onConnectedForQueueTest)
+
+	// setup api server
+	server, _ := app.SetupAPIServer("HTTP")
+	server.SetHandler(sdk.APIMethod.GET, "/sample1", sample)
+	server.SetHandler(sdk.APIMethod.GET, "/sample2", sample2)
+	server.SetHandler(sdk.APIMethod.GET, "/sample3", sample3)
+	server.Expose(rand.Int()%10000 + 10000)
+
+	// setup worker
+	// var worker = app.SetupWorker()
+	// worker.SetTask(backgroundTask).SetDelay(2).SetRepeatPeriod(10)
+
+	// launch app
+	app.Launch()
+}

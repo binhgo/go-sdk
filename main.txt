@@ -1,0 +1,126 @@
+package demo
+
+import (
+	"fmt"
+	"strconv"
+
+	"gopkg.in/mgo.v2/bson"
+
+	"gitlab.ghn.vn/common-projects/go-sdk"
+)
+
+var orderDB = &sdk.DBModel{
+	DBName:  "station_order_test",
+	ColName: "order",
+}
+
+// Order ..
+type Order struct {
+	code string
+}
+
+func sample(req sdk.APIRequest, res sdk.APIResponder) error {
+	i, err := orderDB.CountAll()
+	if err != nil {
+		return res.Respond(sdk.APIResponse{Status: sdk.APIStatus.Error, Message: err.Error()})
+	}
+
+	orderDB.Create(&Order{
+		code: "A" + strconv.Itoa(i),
+	})
+
+	return res.Respond(sdk.APIResponse{Status: sdk.APIStatus.Ok, Message: "Everything is ok."})
+}
+
+func sample2(req sdk.APIRequest, res sdk.APIResponder) error {
+	result, err := orderDB.QueryOne(bson.M{}, &Order{})
+
+	if err != nil {
+		fmt.Println("Error " + err.Error())
+	}
+
+	return res.Respond(sdk.APIResponse{Status: sdk.APIStatus.Invalid, Message: "Something is wrong.", Data: []interface{}{result}})
+}
+
+func scan(req sdk.APIRequest, res sdk.APIResponder) error {
+	return res.Respond(sdk.APIResponse{
+		Status:  sdk.APIStatus.Ok,
+		Message: "Get order info successfully.",
+		Data: []interface{}{
+			bson.M{
+				"orderCode":   "ABCDEF1234",
+				"sortingCode": "01-02-03",
+			},
+		},
+	})
+}
+
+func packed(req sdk.APIRequest, res sdk.APIResponder) error {
+	return res.Respond(sdk.APIResponse{
+		Status:  sdk.APIStatus.Ok,
+		Message: "Put item into package successfully.",
+		Data: []interface{}{
+			bson.M{
+				"packageCode":     "ABCDEF1234",
+				"itemNumber":      20,
+				"createdTime":     "2018-12-09T02:46:35.450Z",
+				"lastUpdatedTime": "2018-12-09T02:46:35.450Z",
+			},
+		},
+	})
+}
+
+func full(req sdk.APIRequest, res sdk.APIResponder) error {
+	return res.Respond(sdk.APIResponse{
+		Status:  sdk.APIStatus.Ok,
+		Message: "Receive CLOSE-PACKAGE-EVENT successfully.",
+		Data: []interface{}{
+			bson.M{
+				"packageCode":     "ABCDEF1234",
+				"itemNumber":      30,
+				"createdTime":     "2018-12-09T02:46:35.450Z",
+				"lastUpdatedTime": "2018-12-09T02:46:35.450Z",
+			},
+		},
+	})
+}
+
+func onConnected(session *sdk.DBSession) error {
+	orderDB.Init(session)
+	return nil
+}
+
+func backgroundTask() {
+
+}
+
+func main() {
+
+	// new app
+	var app = sdk.NewApp("MyApp")
+
+	// setup database client
+	var db = app.SetupDBClient(sdk.DBConfiguration{
+		Address:  []string{"45.119.212.234:27017"},
+		Username: "admin",
+		Password: "QWERTYghjkl987654321ASDFG",
+	})
+	db.OnConnected(onConnected)
+
+	// setup api server
+	var server = app.SetupAPIServer()
+	server.SetHandle(sdk.APIMethod.GET, "/v1/order", sample)
+	server.SetHandle(sdk.APIMethod.GET, "/booking", sample2)
+
+	server.SetHandle(sdk.APIMethod.GET, "/asis/v1/item/scan", scan)
+	server.SetHandle(sdk.APIMethod.GET, "/asis/v1/item/pack", packed)
+	server.SetHandle(sdk.APIMethod.GET, "/asis/v1/package/close", full)
+	server.Expose(80)
+
+	// setup worker
+	var worker = app.SetupWorker()
+	worker.SetTask(backgroundTask).SetDelay(30).SetRepeatPeriod(3600)
+
+	// launch app
+	app.Launch()
+}
